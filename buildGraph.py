@@ -45,7 +45,7 @@ def construct_kg(ontologySet,annotationSet,annotationType):
                     ents.update((ent.strip() for ent in annotations.split(",")))
 
                     if headEnt not in ents:
-                        ents.append(headEnt)
+                        ents.add(headEnt)
 
                     for urlAnnot in annotations.split(","):
                         kg.add((URIRef(headEnt), URIRef(f"http://purl.obolibrary.org/obo/{annotationType[loc]}"),
@@ -71,7 +71,7 @@ def construct_kg(ontologySet,annotationSet,annotationType):
 
                         ents.update((ent.strip() for ent in annotations.split(",")))
                         if headEnt not in ents:
-                            ents.append(headEnt)
+                            ents.add(headEnt)
 
                         for urlAnnot in annotations.split(","):
                             kg.add((URIRef(headEnt), URIRef(f"http://purl.obolibrary.org/obo/{annotationType[trueLoc]}"),
