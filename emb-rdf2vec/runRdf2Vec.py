@@ -1,4 +1,8 @@
 # Importing Packages
+import sys
+
+sys.path.append('/home/ricciard0.dc/RDF2Vec_Structure')
+
 from pyrdf2vec.graphs import kg
 from pyrdf2vec.graphs.vertex import Vertex
 from pyrdf2vec.rdf2vec import RDF2VecTransformer
@@ -13,7 +17,7 @@ from sklearn import manifold
 
 from tqdm import tqdm
 
-def main(ontologySet,annotationSet,annotationType,outputPath = '/Users/ricardocarvalho/Documents/WorkStation/RDF2Vec_Structure/emb-rdf2vec/output' ):
+def main(ontologySet,annotationSet,annotationType,outputPath = '/home/ricciard0.dc/RDF2Vec_Structure/emb-rdf2vec/output/' ):
     # Creating a pyrdf2vec graph
     g,ents = bg.construct_kg(ontologySet,annotationSet,annotationType)
     g_pyrdf2vec = kg.KG(mul_req=False)
@@ -73,8 +77,24 @@ def main(ontologySet,annotationSet,annotationType,outputPath = '/Users/ricardoca
     print('Process Ran Successfully')
 
 if __name__ == "__main__":
+     # Load the knowledge graph
+    ontologySet = ['/home/ricciard0.dc/mimicReadmission/mimicreadmission/Data/ontologies/Thesaurus.owl',
+                '/home/ricciard0.dc/mimicReadmission/mimicreadmission/Data/ontologies/LOINC.rdf',
+                '/home/ricciard0.dc/mimicReadmission/mimicreadmission/Data/ontologies/dron.owl',
+                '/home/ricciard0.dc/mimicReadmission/mimicreadmission/Data/ontologies/ICD9CM.ttl'
+                   ]
+    annotationSet = ['/home/ricciard0.dc/mimicReadmission/mimicreadmission/Data/annotations/AnnotationsInitialDiagnosis.csv',
+                    '/home/ricciard0.dc/mimicReadmission/mimicreadmission/Data/annotations/AnnotationsLabEvents.csv',
+                    '/home/ricciard0.dc/mimicReadmission/mimicreadmission/Data/annotations/AnnotationsPrescriptions.csv',
+                    '/home/ricciard0.dc/mimicReadmission/mimicreadmission/Data/annotations/AnnotationsProcedures.csv',
+                    '/home/ricciard0.dc/mimicReadmission/mimicreadmission/Data/annotations/AnnotationsFinalDiagnosis.csv'
+                    ]
+                    
+    annotationType = ['hasInitialDiagnosis',
+                    'hasLabEvent',
+                    'hasPrescription',
+                    'hasProcedure',
+                    'hasFinalDiagnosis'
+                      ]
 
-    annotationSet = ['/Users/ricardocarvalho/Documents/WorkStation/RDF2Vec_Structure/emb-rdf2vec/data/ICD9CM/ICD9CM.ttl',]
-    ontologySet = ['/Users/ricardocarvalho/Documents/WorkStation/RDF2Vec_Structure/emb-rdf2vec/data/ICD9CM/ICD9CM.ttl',]
-    annotationType = ['ICD9CM']
     main(ontologySet,annotationSet,annotationType)
