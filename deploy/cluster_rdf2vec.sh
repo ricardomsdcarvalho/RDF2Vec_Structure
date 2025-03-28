@@ -11,7 +11,7 @@
 
 
 
-#uv venv .venv
+#uv venv .venv --python=python3.11
 #SEMANTIC LAYER EMBEDDINGS
 # uv run python /home/rcarvalho/RDF2Vec_Structure/emb-rdf2vec/inUseRdf2Vec.py \
 #        --entities home/rcarvalho/datasets/ICU/Ncit_semantic_notime/entity2id.txt\

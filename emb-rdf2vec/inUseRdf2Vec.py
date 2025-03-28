@@ -1,5 +1,8 @@
 import argparse
 import sys
+
+sys.path.append('/home/ricciard0.dc/RDF2Vec_Structure')
+
 import buildGraph as bg
 import matplotlib.pyplot as plt
 import seaborn as sns
