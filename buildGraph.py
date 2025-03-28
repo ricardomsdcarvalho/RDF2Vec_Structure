@@ -1,7 +1,7 @@
-from operator import itemgetter
 import json
-
 import rdflib
+
+from operator import itemgetter
 from rdflib.namespace import RDF, OWL, RDFS
 from rdflib import URIRef
 from tqdm import tqdm
@@ -15,6 +15,83 @@ file_formats = {
     ".ttl": "turtle",
     # Add other formats if needed
 }
+
+def in_use_construct_kg(entityFile,triplesFile,relationFile):
+    '''
+    The entites and relations files are used to create the KG and are formated as URI \t id
+    All files start with a header line, so we skip the first line
+    '''
+
+    #Process Entities
+    print("Processing Entities")
+    ents = set()
+    with open(entityFile, 'r') as file:
+        for line in file.readlines()[1:]:
+            entity, _id = line.split("\t")
+
+            if 'http:' in entity:
+                ents.add(entity.strip())
+            else:
+                #Make a temporary URI for the graph
+                entity = f"http://purl.obolibrary.org/obo/{entity.strip()}"
+                ents.add(entity)
+                #print(f"Entity {entity} is not a valid URL")
+    
+    #Process Relations
+    print("Processing Relations")
+    rels = set()
+    with open(relationFile, 'r') as file:
+        for line in file.readlines()[1:]:
+            relation, _id = line.split("\t")
+        
+            if 'http:' in relation:
+                rels.add(relation.strip())
+            else:
+                #Make a temporary URI for the graph
+                relation = f"http://purl.obolibrary.org/obo/{relation.strip()}"
+                rels.add(relation)
+                print(f"Relation {relation} is not a valid URL")
+
+            rels.add(relation.strip())
+            
+    #Create the graph
+    kg = rdflib.Graph()
+
+    #Parse the triples and update the graph
+    print("Processing Triples")
+    with open(triplesFile, 'r') as file:
+        for line in tqdm(file.readlines()[1:], desc="Loading Annotations", unit="annotation"):
+            headEnt, tailEnt, _relation = line.split("\t")
+
+            if 'http:' not in headEnt:
+                headEnt = f"http://purl.obolibrary.org/obo/{headEnt.strip()}"
+            
+            if 'http:' not in tailEnt:
+                tailEnt = f"http://purl.obolibrary.org/obo/{tailEnt.strip()}"
+            
+            if 'http:' not in _relation:
+                _relation = f"http://purl.obolibrary.org/obo/{_relation.strip()}"
+
+            if headEnt not in ents:
+                ents.add(headEnt.strip())
+            if tailEnt not in ents:
+                ents.add(tailEnt.strip())
+            if _relation not in rels:
+                rels.add(_relation.strip())
+
+            print(f"Head: {headEnt} Tail: {tailEnt} Relation: {_relation}")
+            kg.add((URIRef(headEnt.strip()), URIRef(_relation), URIRef(tailEnt.strip())))
+            kg.add((URIRef(headEnt.strip()), RDF.type, OWL.Class))
+            kg.add((URIRef(tailEnt.strip()), RDF.type, OWL.Class))
+    
+    #Add the relations to the graph
+    for rel in rels:
+        kg.add((URIRef(rel), RDF.type, OWL.ObjectProperty))
+
+    
+    print("🚀 KG created")
+    return kg,ents
+
 
 def construct_kg(ontologySet,annotationSet,annotationType):
     try:
@@ -91,3 +168,11 @@ def construct_kg(ontologySet,annotationSet,annotationType):
 
     print("KG created")
     return kg,ents
+
+#if __name__ == '__main__':
+
+    # Files
+    #entityFile = '/Users/ricardocarvalho/Documents/Thesis/Data/TkgConstructions/ICU-NCIT/ON.txt'
+    #relationFile = '/Users/ricardocarvalho/Documents/Thesis/Data/TkgConstructions/ICU-NCIT/OR.txt'
+    #triplesFile = '/Users/ricardocarvalho/Documents/Thesis/Data/TkgConstructions/ICU-NCIT/OENT.txt'
+    #in_use_construct_kg(entityFile,triplesFile,relationFile)
