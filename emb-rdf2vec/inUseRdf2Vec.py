@@ -1,7 +1,7 @@
 import argparse
 import sys
 
-sys.path.append('/home/ricciard0.dc/RDF2Vec_Structure')
+sys.path.append('/home/rcarvalho/RDF2Vec_Structure')
 
 import buildGraph as bg
 import matplotlib.pyplot as plt
@@ -65,7 +65,7 @@ def main(enityFile, triplesFile, relationsFile, targets ,outpath, experimentName
     #Training the model
     print(' ⏳ Trainging RDF2Vec embeddings')
     transformer = RDF2VecTransformer(Word2Vec(vector_size=vector_size, sg=sg_value), walkers=[walker])
-    embeddings, literals = transformer.fit_transform(g_pyrdf2vec, ents)
+    embeddings, literals = transformer.fit_transform(g_pyrdf2vec, list(ents))
 
     #Filter Target Entities
     with open(targets, 'r') as f:
@@ -79,7 +79,7 @@ def main(enityFile, triplesFile, relationsFile, targets ,outpath, experimentName
                 embedding_str = "\t".join(map(str, embedding))  # Tab-separated values
                 file.write(f"{entity}\t{embedding_str}\n")  # Match required format
 
-    print(f"✅ Filtered embeddings written to {output_file}")
+    print(f"        ✅ Filtered embeddings written to {output_file}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train Rdf2vec and extract embeddings")
@@ -93,8 +93,8 @@ if __name__ == "__main__":
     
     main(
         enityFile=args.entities,
-        triplesFile=args.relations,
-        relationsFile=args.triples,
+        triplesFile=args.triples,
+        relationsFile=args.relations,
         targets=args.targets,
         outpath=args.outpath,
         experimentName=args.experiment

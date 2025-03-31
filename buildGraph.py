@@ -16,6 +16,7 @@ file_formats = {
     # Add other formats if needed
 }
 
+
 def in_use_construct_kg(entityFile,triplesFile,relationFile):
     '''
     The entites and relations files are used to create the KG and are formated as URI \t id
@@ -56,7 +57,8 @@ def in_use_construct_kg(entityFile,triplesFile,relationFile):
             
     #Create the graph
     kg = rdflib.Graph()
-
+    ents = set()
+    rels = set()
     #Parse the triples and update the graph
     print("Processing Triples")
     with open(triplesFile, 'r') as file:
@@ -72,18 +74,17 @@ def in_use_construct_kg(entityFile,triplesFile,relationFile):
             if 'http:' not in _relation:
                 _relation = f"http://purl.obolibrary.org/obo/{_relation.strip()}"
 
-            if headEnt not in ents:
-                ents.add(headEnt.strip())
-            if tailEnt not in ents:
-                ents.add(tailEnt.strip())
-            if _relation not in rels:
-                rels.add(_relation.strip())
+            #if headEnt not in ents:
+            ents.add(headEnt.strip())
+            #if tailEnt not in ents:
+            ents.add(tailEnt.strip())
+            #if _relation not in rels:
+            rels.add(_relation.strip())
 
-            print(f"Head: {headEnt} Tail: {tailEnt} Relation: {_relation}")
             kg.add((URIRef(headEnt.strip()), URIRef(_relation), URIRef(tailEnt.strip())))
             kg.add((URIRef(headEnt.strip()), RDF.type, OWL.Class))
             kg.add((URIRef(tailEnt.strip()), RDF.type, OWL.Class))
-    
+
     #Add the relations to the graph
     for rel in rels:
         kg.add((URIRef(rel), RDF.type, OWL.ObjectProperty))
